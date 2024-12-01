@@ -44,7 +44,7 @@ from objects.sprite import Sprite
 
 # timer
 def counting_down(sprite):
-    if sprite.timer > 0: #!= 0:
+    if sprite.timer > 0:  #!= 0:
         sprite.timer -= 1
         return True
     else:
@@ -57,56 +57,56 @@ def ghosts_direction(ghost, diff_x, diff_y, dir_1, dir_2, dir_3, dir_4):
     random_direction = rndi(0, 7)
 
     # some random to stop changing direction every frame
-    if (pyxel.frame_count % 30) < rndi(1, 60):
-        # if across is more than down
-        if abs(diff_x) > abs(diff_y):
-            # if diff_x is positive move ghost to the left
-            if sgn(diff_x) == 1:
-                # check if in line with tile
-                if ghost.y % 8 == 0:
-                    # check if light blue wall in the way changed to <5 as no colours
-                    ### if the way is clear, go left
-                    if pget(ghost.x - 2, ghost.y + 4) < 5:  #!=6:
-                        ghost.direction = dir_1
-                    # else go in other rnd direction to help with getting stuck
-                    else:
-                        #print("RANDOM")
-                        ghost.direction = directions[random_direction]
-            # else diff_x is 0 or negative, move ghost to the right
-            else:
-                # check if in line with tile
-                if ghost.y % 8 == 0:
-                    # check if light blue wall in the way
-                    if pget(ghost.x + 9, ghost.y + 4) < 5:  #!= 6:
-                        ghost.direction = dir_2
-                    else:
-                        #print("RANDOM")
-                        ghost.direction = directions[random_direction]
-        # else down is more than across
-        elif abs(diff_x) < abs(diff_y):
-            # if diff_y is positve, move ghost up
-            if sgn(diff_y) == 1:
-                # check if in line with tile
-                if ghost.x % 8 == 0:
-                    # check if light blue wall in the way
-                    if pget(ghost.x + 4, ghost.y - 2) < 5:  #!= 6:
-                        ghost.direction = dir_3
-                    else:
-                        #print("RANDOM")
-                        ghost.direction = directions[random_direction]
-            # else diff_y is 0 or negative, move ghost down
-            else:
-                # check if in line with tile
-                if ghost.x % 8 == 0:
-                    # check if light blue wall in the way
-                    if pget(ghost.x + 4, ghost.y + 9) < 5:  #!= 6:
-                        ghost.direction = dir_4
-                    else:
-                        #print("RANDOM")
-                        ghost.direction = directions[random_direction]
+    # if (pyxel.frame_count % 30) < rndi(1, 60):
+    # if across is more than down
+    if abs(diff_x) > abs(diff_y):
+        # if diff_x is positive move ghost to the left
+        if sgn(diff_x) == 1:
+            # check if in line with tile
+            if ghost.y % 8 == 0:
+                # check if light blue wall in the way changed to <5 as no colours
+                ### if the way is clear, go left
+                if pget(ghost.x - 2, ghost.y + 4) < 5:  #!=6:
+                    ghost.direction = dir_1
+                # else go in other rnd direction to help with getting stuck
+                else:
+                    # print("RANDOM")
+                    ghost.direction = directions[random_direction]
+        # else diff_x is 0 or negative, move ghost to the right
         else:
-            ghost.direction = directions[random_direction]
-        #print(ghost.direction)
+            # check if in line with tile
+            if ghost.y % 8 == 0:
+                # check if light blue wall in the way
+                if pget(ghost.x + 9, ghost.y + 4) < 5:  #!= 6:
+                    ghost.direction = dir_2
+                else:
+                    # print("RANDOM")
+                    ghost.direction = directions[random_direction]
+    # else down is more than across
+    elif abs(diff_x) < abs(diff_y):
+        # if diff_y is positve, move ghost up
+        if sgn(diff_y) == 1:
+            # check if in line with tile
+            if ghost.x % 8 == 0:
+                # check if light blue wall in the way
+                if pget(ghost.x + 4, ghost.y - 2) < 5:  #!= 6:
+                    ghost.direction = dir_3
+                else:
+                    # print("RANDOM")
+                    ghost.direction = directions[random_direction]
+        # else diff_y is 0 or negative, move ghost down
+        else:
+            # check if in line with tile
+            if ghost.x % 8 == 0:
+                # check if light blue wall in the way
+                if pget(ghost.x + 4, ghost.y + 9) < 5:  #!= 6:
+                    ghost.direction = dir_4
+                else:
+                    # print("RANDOM")
+                    ghost.direction = directions[random_direction]
+    else:
+        ghost.direction = directions[random_direction]
+    # print(ghost.direction)
 
 
 # moving all the sprites when a direction has been set
@@ -115,8 +115,8 @@ def move_sprite(sprite):
     # dealing with the middle passages
     # for sprite in Sprite.sprite_list:
     if sprite.x < 0:
-        sprite.x = 158
-    if sprite.x > 159:
+        sprite.x = pyxel.width # 158
+    if sprite.x > pyxel.width: # 159:
         sprite.x = 0
 
     match sprite.direction:
@@ -154,6 +154,8 @@ def move_sprite(sprite):
             pass
     ##print(f"{sprite.name}, {sprite.direction}")
 
+#print(matrix[1][0])
+
 
 # make a class for the App as they say in the instructions
 class App:
@@ -167,12 +169,14 @@ class App:
 
         # this is init which runs once at the start to set screen size, title, frame rate, etc
         init(
-            width=160,
-            height=120,
+            # width=160,
+            # height=120,
+            width=120,
+            height=160,
             title="PAC-MAN",
             fps=30,
             quit_key=KEY_Q,
-            # display_scale=10,  # maximised window?
+            display_scale=5,  # 10 = maximised window?
         )
         # load graphic and sound assets
         load("sprite.pyxres")
@@ -180,8 +184,8 @@ class App:
         self.dummy_ghost = Sprite(
             name="dummy",
             image_bank=0,
-            x=80,
-            y=56,
+            x=56, #x=80,
+            y=80, #y=56,
             u=0,
             v=40,
             w=8,
@@ -194,8 +198,8 @@ class App:
         self.pacman = Sprite(
             name="pacman",
             image_bank=0,
-            x=76,
-            y=72,
+            x=56, #x=76,
+            y=112, #y=72,
             u=0,
             v=0,
             w=8,
@@ -208,8 +212,8 @@ class App:
         self.blue_ghost = Sprite(
             name="blue",
             image_bank=0,
-            x=64,
-            y=55,
+            x=56, #x=64,
+            y=79, #y=55,
             u=0,
             v=8,
             w=8,
@@ -222,8 +226,8 @@ class App:
         self.green_ghost = Sprite(
             name="green",
             image_bank=0,
-            x=72,
-            y=55,
+            x=48, #x=72,
+            y=79, #y=55,
             u=0,
             v=16,
             w=8,
@@ -235,8 +239,8 @@ class App:
         self.red_ghost = Sprite(
             name="red",
             image_bank=0,
-            x=80,
-            y=55,
+            x=56, #x=80,
+            y=64, #y=55,
             u=0,
             v=24,
             w=8,
@@ -248,8 +252,8 @@ class App:
         self.orange_ghost = Sprite(
             name="orange",
             image_bank=0,
-            x=88,
-            y=55,
+            x=64, #x=88,
+            y=79, #y=55,
             u=0,
             v=32,
             w=8,
@@ -263,6 +267,8 @@ class App:
         self.small_pill = (2, 2)
         self.big_pill = (2, 3)
         self.blank_tile = (0, 5)
+        self.start = False
+        self.end = False
 
         for ghost in Sprite.sprite_list[2:]:
             ghost.target = Sprite.sprite_list[1]
@@ -296,21 +302,23 @@ class App:
         # if self.pacman.x > 159:
         #    self.pacman.x = 0
 
-        pacman = Sprite.sprite_list[1]
-
+        # pacman = Sprite.sprite_list[1]
+        pacman_tile_location = (self.pacman.x // 8, self.pacman.y // 8) 
         current_tile = pyxel.tilemaps[0].pget(
-            (self.pacman.x // 8), (self.pacman.y // 8)
-        )
-
+            # (self.pacman.x // 8), (self.pacman.y // 8)
+            pacman_tile_location[0], pacman_tile_location[1]
+            )
+        
         # if the tile at pacman location is the small pill
         if current_tile == self.small_pill:
             # count the number of small pills collected, break if all are collected
-            if self.pill_count < 127:
+            if self.pill_count < 114:
                 self.pill_count += 1
-                # #print(self.pill_count)  # 132
+                # print(self.pill_count)
                 # this changes the tile map at pacman location to a black tile to eat pills
                 pyxel.tilemaps[0].pset(
-                    self.pacman.x // 8, self.pacman.y // 8, self.blank_tile
+                    # self.pacman.x // 8, self.pacman.y // 8, self.blank_tile
+                    pacman_tile_location[0], pacman_tile_location[1], self.blank_tile
                 )
             else:
                 print("you win")
@@ -332,8 +340,7 @@ class App:
                 ghost.timer = 60
                 ghost.show = True
                 ghost.target = Sprite.sprite_list[1]
-            
-            
+                ghost.speed = 1
 
         # Pac controls, detect key press only when allowed to move, set direction
         # check if in line with tile
@@ -371,19 +378,18 @@ class App:
                             ghost.show = False
                         else:
                             ghost.show = True
-                        #if ghost.u == 8:
+                        # if ghost.u == 8:
                         #    ghost.change_costume(3)
-                        #else:
+                        # else:
                         #    ghost.change_costume(1)
                 else:
                     ghost.change_costume(0)
                     ghost.target = Sprite.sprite_list[1]
                     ghost.show = True
-                    
 
-            #objective = ghost.target
-            diff_x = ghost.x - ghost.target.x #objective.x
-            diff_y = ghost.y - ghost.target.y #objective.y
+            # objective = ghost.target
+            diff_x = ghost.x - ghost.target.x  # objective.x
+            diff_y = ghost.y - ghost.target.y  # objective.y
 
             # #print(f"({diff_x},{diff_y})")
             if abs(diff_x) == 0 and abs(diff_y) < 10:
@@ -402,13 +408,19 @@ class App:
                         ghosts_direction(
                             ghost, diff_x, diff_y, "left", "right", "up", "down"
                         )
+                        ghost.speed = 1
                 # target is run away
                 case 8:
                     if catch:
-                        #print("dead ghost")
+                        # print("dead ghost")
                         ghost.change_costume(2)
                         ghost.target = Sprite.sprite_list[0]
-                        #ghost.speed = 2
+                        # change to nearest block
+                        # print(ghost.x, ghost.y)
+                        ghost.x = ghost.x - ghost.x % 8
+                        ghost.y = ghost.y - ghost.y % 8
+                        # print(ghost.x, ghost.y)
+                        ghost.speed = 8
                     else:
                         ghosts_direction(
                             ghost, diff_x, diff_y, "right", "left", "down", "up"
@@ -418,46 +430,60 @@ class App:
                     if catch:
                         ghost.change_costume(0)
                         ghost.target = Sprite.sprite_list[1]
-                        ghost.direction = "up" ##notcertain
+                        # ghost.direction = "up"  ##notcertain
                         ghost.timer = 0
-                        #ghost.speed = 1
+                        ghost.speed = 1
+                    # else:
+                    #     ##print(f"{ghost.x},{ghost.y}")
+                    #     # hard coded to get dead ghosts home... they get stuck in other places too..
+                    #     if ghost.y == 72:
+                    #         if ghost.x > 54 and ghost.x < 100:
+                    #             ghost.direction = "right"
+                    #             ##print("RIGHT")
+                    #         else:
+                    #             if ghost.x > 99 and ghost.x < 105:
+                    #                 # if counting_down(ghost):
+                    #                 ghost.direction = "up"
+                    #                 # else:
+                    #                 #    ghost.timer = 120
+                    #                 ##print("UP")
+                    #             else:
+                    #                 ##print("ELSE1")
+                    #                 ghosts_direction(
+                    #                     ghost,
+                    #                     diff_x,
+                    #                     diff_y,
+                    #                     "left",
+                    #                     "right",
+                    #                     "up",
+                    #                     "down",
+                    #                 )
+
                     else:
-                        ##print(f"{ghost.x},{ghost.y}")
-                        # hard coded to get dead ghosts home... they get stuck in other places too..
-                        if ghost.y == 72:
-                            if ghost.x > 54 and ghost.x < 100:
+                        # #print(f"{ghost.x},{ghost.y}")
+                        ##print("ELSE")
+                        # ghosts_direction(
+                        #     ghost, diff_x, diff_y, "left", "right", "up", "down"
+                        # )
+                        tile = pyxel.tilemaps[1].pget(ghost.x // 8, ghost.y // 8)
+                        match tile:
+                            case (0,6):
                                 ghost.direction = "right"
-                                ##print("RIGHT")
-                            else:
-                                if ghost.x > 99 and ghost.x < 105:
-                                    #if counting_down(ghost):
-                                    ghost.direction = "up"
-                                    #else:
-                                    #    ghost.timer = 120
-                                    ##print("UP")
-                                else:
-                                    ##print("ELSE1")
-                                    ghosts_direction(
-                                        ghost,
-                                        diff_x,
-                                        diff_y,
-                                        "left",
-                                        "right",
-                                        "up",
-                                        "down",
-                                    )
-
-                        else:
-                            # #print(f"{ghost.x},{ghost.y}")
-                            ##print("ELSE")
-                            ghosts_direction(
-                                ghost, diff_x, diff_y, "left", "right", "up", "down"
-                            )
-
+                            case (1,6):
+                                ghost.direction = "left"
+                            case (2,6):
+                                ghost.direction = "down"
+                            case (3,6):
+                                ghost.direction = "up"
+                            case _:
+                                pass
+                        
         # move the ghosts up at the start
         if pyxel.frame_count < 30:
-            self.red_ghost.direction = "up"
+            self.red_ghost.direction = "right"
             self.green_ghost.direction = "up"
+            self.blue_ghost.direction = "up"
+            self.orange_ghost.direction = "up"
 
         for sprite in Sprite.sprite_list[1:]:
             move_sprite(sprite)
@@ -477,68 +503,73 @@ class App:
 
     #    # this is 'draw' for animations and moving things around on screen, runs when needed
     def draw(self):
+        if self.start:
+            text(50, 50, f"go, go, go", COLOR_GREEN)
+        elif self.end:
+            pass
+        else:
+            back_colour = COLOR_BLACK  # 0-15
+            text_x = 8
+            text_y = 2
+            text_colour = COLOR_WHITE  # 0-15
+            # print(pyxel.width)
+            # clear the screen and fill with background colour-back_colour
+            # cls(back_colour)
 
-        back_colour = COLOR_BLACK  # 0-15
-        text_x = 50
-        text_y = 66
-        text_colour = COLOR_GREEN  # 0-15
+            # draw the tile-map
+            bltm(x=0, y=0, tm=0, u=0, v=0, w=pyxel.width, h=pyxel.height)
+            # bltm(x=0, y=0, tm=0, u=0, v=0, w=160, h=120)
 
-        # clear the screen and fill with background colour-back_colour
-        # cls(back_colour)
+            # write text in the location x,y
+            # if pyxel.frame_count < 30:
+            text(text_x, text_y, f"PAC-MAN", text_colour)
+            # if ((pyxel.frame_count % 30 < 15) == 0):
 
-        # draw the tile-map
-        bltm(0, 0, 0, 0, 0, 160, 120)
+            # draw pacman if show is True
+            #        if self.pacman.show:
+            #            blt(
+            #                self.pacman.x,
+            #                self.pacman.y,
+            #                self.pacman.image_bank,
+            #                self.pacman.u,
+            #                self.pacman.v,
+            #                self.pacman.w,
+            #                self.pacman.h,
+            #                self.pacman.colkey,
+            #                rotate=self.pacman.rotation,
+            #                scale=self.pacman.scale,
+            #            )
 
-        # write text in the location x,y
-        # if pyxel.frame_count < 30:
-        #     text(text_x, text_y, f"GO GO GO!", text_colour)
-
-        # if ((pyxel.frame_count % 30 < 15) == 0):
-
-        # draw pacman if show is True
-        #        if self.pacman.show:
-        #            blt(
-        #                self.pacman.x,
-        #                self.pacman.y,
-        #                self.pacman.image_bank,
-        #                self.pacman.u,
-        #                self.pacman.v,
-        #                self.pacman.w,
-        #                self.pacman.h,
-        #                self.pacman.colkey,
-        #                rotate=self.pacman.rotation,
-        #                scale=self.pacman.scale,
-        #            )
-
-        # draw ghost if show is True
-        #        if self.blue_ghost.show:
-        #            blt(
-        #                self.blue_ghost.x,
-        #                self.blue_ghost.y,
-        #                self.blue_ghost.image_bank,
-        #                self.blue_ghost.u,
-        #                self.blue_ghost.v,
-        #                self.blue_ghost.w,
-        #                self.blue_ghost.h,
-        #                self.blue_ghost.colkey,
-        #                rotate=self.blue_ghost.rotation,
-        #                scale=self.blue_ghost.scale,
-        #            )
-        for sprite in Sprite.sprite_list:
             # draw ghost if show is True
-            if sprite.show:
-                blt(
-                    sprite.x,
-                    sprite.y,
-                    sprite.image_bank,
-                    sprite.u,
-                    sprite.v,
-                    sprite.w,
-                    sprite.h,
-                    sprite.colkey,
-                    rotate=sprite.rotation,
-                    scale=sprite.scale,
-                )
+            #        if self.blue_ghost.show:
+            #            blt(
+            #                self.blue_ghost.x,
+            #                self.blue_ghost.y,
+            #                self.blue_ghost.image_bank,
+            #                self.blue_ghost.u,
+            #                self.blue_ghost.v,
+            #                self.blue_ghost.w,
+            #                self.blue_ghost.h,
+            #                self.blue_ghost.colkey,
+            #                rotate=self.blue_ghost.rotation,
+            #                scale=self.blue_ghost.scale,
+            #            )
+            for sprite in Sprite.sprite_list:
+                # draw ghost if show is True
+                if sprite.show:
+                    blt(
+                        sprite.x,
+                        sprite.y,
+                        sprite.image_bank,
+                        sprite.u,
+                        sprite.v,
+                        sprite.w,
+                        sprite.h,
+                        sprite.colkey,
+                        rotate=sprite.rotation,
+                        scale=sprite.scale,
+                    )
+
 
 # Start the App
 App()
