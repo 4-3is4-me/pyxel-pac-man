@@ -2,44 +2,14 @@
 ## add more ghosts ; done
 ## add list for sprites ; done
 ## detect pac ghost collisions ; done
-## add things to collect ; done#
+## add things to collect ; done
 ## control power pills, collection, timing, ghost behaviour; done
-## game over and winning
+## game over and winning; done
 
 
 # import the pyxel module
 import pyxel
 from objects.sprite import Sprite
-
-
-# setting the ghosts direction
-# for ghost in Sprite.sprite_list[2:]:
-
-
-# if self.pacman.power:
-#    if self.power_timer == 0:
-#        self.pacman.power = False
-#        self.power_timer = 700
-#        for ghost in Sprite.sprite_list[2:]:
-#            ghost.change_costume(0)
-#    else:
-#        self.power_timer -= 1
-# else:
-
-
-# distance from pacman, calculating which is further, up or across
-#        objective = Sprite.sprite_list[target]
-#        diff_x = ghost.x - objective.x
-#        diff_y = ghost.y - objective.y#
-#
-#        # #print(f"({diff_x},{diff_y})")
-#        if abs(diff_x) == 0 and abs(diff_y) < 10:
-#            #print("game over")
-#            # quit()
-#        elif abs(diff_x) < 10 and abs(diff_y) == 0:
-#            #print("game over")
-#            # quit()
-
 
 # make a class for the App as they say in the instructions
 class App:
@@ -182,22 +152,22 @@ class App:
     def player_controls(self):
         # check if in line with tile
         if self.pacman.y % 8 == 0:
-            if pyxel.btn(pyxel.KEY_RIGHT):
+            if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
                 # check if light blue wall in the way
                 if pyxel.pget(self.pacman.x + 9, self.pacman.y + 4) != 6:
                     self.pacman.direction = "right"
-            elif pyxel.btn(pyxel.KEY_LEFT):
+            elif pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
                 # check if light blue wall in the way
                 if pyxel.pget(self.pacman.x - 2, self.pacman.y + 4) != 6:
                     self.pacman.direction = "left"
 
             # check if in line with tile
             if self.pacman.x % 8 == 0:
-                if pyxel.btn(pyxel.KEY_DOWN):
+                if pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
                     # check if light blue wall in the way
                     if pyxel.pget(self.pacman.x + 4, self.pacman.y + 9) != 6:
                         self.pacman.direction = "down"
-                elif pyxel.btn(pyxel.KEY_UP):
+                elif pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
                     # check if light blue wall in the way
                     if pyxel.pget(self.pacman.x + 4, self.pacman.y - 2) != 6:
                         self.pacman.direction = "up"
@@ -265,8 +235,8 @@ class App:
         # dealing with the middle passages
         # for sprite in Sprite.sprite_list:
         if sprite.x < 0:
-            sprite.x = pyxel.width  # 158
-        if sprite.x > pyxel.width:  # 159:
+            sprite.x = pyxel.width
+        if sprite.x > pyxel.width:
             sprite.x = 0
             
     # moving all the sprites when a direction has been set
@@ -475,8 +445,8 @@ class App:
             h=pyxel.height
         )
 
+    # draw sprites if show is True
     def draw_sprites(self):
-        # draw sprites if show is True
         for sprite in Sprite.sprite_list:
             if sprite.show:
                 pyxel.blt(
@@ -544,6 +514,37 @@ class App:
 
 # Start the App
 App()
+
+### NOTES
+
+# setting the ghosts direction
+# for ghost in Sprite.sprite_list[2:]:
+
+
+# if self.pacman.power:
+#    if self.power_timer == 0:
+#        self.pacman.power = False
+#        self.power_timer = 700
+#        for ghost in Sprite.sprite_list[2:]:
+#            ghost.change_costume(0)
+#    else:
+#        self.power_timer -= 1
+# else:
+
+
+# distance from pacman, calculating which is further, up or across
+#        objective = Sprite.sprite_list[target]
+#        diff_x = ghost.x - objective.x
+#        diff_y = ghost.y - objective.y#
+#
+#        # #print(f"({diff_x},{diff_y})")
+#        if abs(diff_x) == 0 and abs(diff_y) < 10:
+#            #print("game over")
+#            # quit()
+#        elif abs(diff_x) < 10 and abs(diff_y) == 0:
+#            #print("game over")
+#            # quit()
+
 
 
 # collision / location
