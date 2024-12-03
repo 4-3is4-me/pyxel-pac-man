@@ -488,7 +488,7 @@ class App:
             self.draw_sprites()
             if pyxel.frame_count % 30 < 20:
                 self.draw_header("Press left or right to start")
-            if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.KEY_LEFT):
+            if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
                 self.start = False
         elif self.end:
             self.draw_tilemap()
