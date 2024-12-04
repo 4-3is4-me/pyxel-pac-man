@@ -29,7 +29,7 @@ class App:
             height=160,
             title="PAC-MAN",
             fps=30,
-            quit_key=pyxel.KEY_Q,
+            quit_key=pyxel.KEY_X,
         )
         # load graphic and sound assets
         pyxel.load("sprite.pyxres")
@@ -278,9 +278,13 @@ class App:
     # this is 'update' for events such as key presses and runs every frame
     def update(self):
         if self.start:
-            pass
+            if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
+                self.start = False
+            # pass
         elif self.end:
-            pass
+            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_X):
+                quit()
+            # pass
         else:
             # pacman = Sprite.sprite_list[1]
             pacman_tile_location = (self.pacman.x // 8, self.pacman.y // 8)
@@ -474,7 +478,7 @@ class App:
         pyxel.text(
                     x=72,
                     y=2,
-                    s=f"Score: {self.score}",
+                    s=f"SCORE: {self.score}",
                     col=pyxel.COLOR_WHITE
                 )    
 
@@ -487,9 +491,7 @@ class App:
             self.draw_tilemap()
             self.draw_sprites()
             if pyxel.frame_count % 30 < 20:
-                self.draw_header("Press left or right to start")
-            if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
-                self.start = False
+                self.draw_header("PRESS LEFT OR RIGHT TO START")
         elif self.end:
             self.draw_tilemap()
             self.draw_sprites()
@@ -498,18 +500,20 @@ class App:
                     self.pacman.show = False
                 else:
                     self.pacman.show = True
-                self.draw_header("Too Bad! Hit q")
+                if pyxel.frame_count % 30 < 20:
+                    self.draw_header("TOO BAD! HIT X")
                 self.draw_score()
             else:
                 self.draw_tilemap()
                 self.draw_sprites()
-                self.draw_header("You Win!")
+                if pyxel.frame_count % 30 < 20:
+                    self.draw_header("YOU WIN! HIT X")
                 self.draw_score()
 
         else:
             self.draw_tilemap()
             self.draw_sprites()
-            self.draw_header("pac-man")
+            self.draw_header("PAC-MAN")
             self.draw_score()
 
 # Start the App
