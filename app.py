@@ -17,7 +17,7 @@ class App:
 
         #############################################################################################
         #                                                                                           #
-        #                   INIT()                                                                  #
+        #                   INIT                                                                    #
         #                                                                                           #
         #############################################################################################
 
@@ -136,10 +136,11 @@ class App:
 
     ###########################################################################################
     #                                                                                         #
-    #                   UPDATE()                                                              #
+    #                   UPDATE                                                                #
     #                                                                                         #
     ###########################################################################################
 
+    # ########### FUNCTIONS ########### #
     # timer
     def counting_down(self, sprite):
         if sprite.timer > 0:  #!= 0:
@@ -147,6 +148,50 @@ class App:
             return True
         else:
             return False
+
+    def check_collisions(self):
+        # pacman = Sprite.sprite_list[1]
+        pacman_tile_location = (self.pacman.x // 8, self.pacman.y // 8)
+        current_tile = pyxel.tilemaps[0].pget(
+            pacman_tile_location[0],
+            pacman_tile_location[1],
+        )
+
+        # if the tile at pacman location is the small pill
+        if current_tile == self.small_pill:
+            # count the number of small pills collected, break if all are collected
+            if self.pill_count < 114:
+                self.pill_count += 1
+                self.score += 10
+                # print(self.pill_count)
+                # this changes the tile map at pacman location to a black tile to eat pills
+                pyxel.tilemaps[0].pset(
+                    pacman_tile_location[0],
+                    pacman_tile_location[1],
+                    self.blank_tile,
+                )
+            else:
+                # print("you win")
+                # clear the final pill
+                pyxel.tilemaps[0].pset(
+                    self.pacman.x // 8, self.pacman.y // 8, self.blank_tile
+                )
+                self.end = True
+
+        # if the tile at pacman location is the big pill
+        elif current_tile == self.big_pill:
+            pyxel.tilemaps[0].pset(
+                self.pacman.x // 8, self.pacman.y // 8, self.blank_tile
+            )
+            self.pacman.timer = 700
+            for ghost in Sprite.sprite_list[2:]:
+                # if ghost.u == 0:
+                ghost.change_costume(1)
+                ghost.timer = 60
+                ghost.show = True
+                ghost.target = Sprite.sprite_list[1]
+                ghost.speed = 1
+
 
     # Pac controls, detect key press only when allowed to move, set direction
     def player_controls(self):
@@ -171,6 +216,89 @@ class App:
                     # check if light blue wall in the way
                     if pyxel.pget(self.pacman.x + 4, self.pacman.y - 2) != 6:
                         self.pacman.direction = "up"
+
+
+    def ghost_staus(self):
+        for ghost in Sprite.sprite_list[2:]:
+            catch = False
+
+            if self.counting_down(self.pacman):
+                pass
+            else:
+                if self.counting_down(ghost):
+                    if pyxel.frame_count % 5 == 0:
+                        if ghost.show:
+                            ghost.show = False
+                        else:
+                            ghost.show = True
+                        # if ghost.u == 8:
+                        #    ghost.change_costume(3)
+                        # else:
+                        #    ghost.change_costume(1)
+                else:
+                    ghost.change_costume(0)
+                    ghost.target = Sprite.sprite_list[1]
+                    ghost.show = True
+
+            # objective = ghost.target
+            diff_x = ghost.x - ghost.target.x  # objective.x
+            diff_y = ghost.y - ghost.target.y  # objective.y
+
+            # #print(f"({diff_x},{diff_y})")
+            if abs(diff_x) == 0 and abs(diff_y) < 10:
+                catch = True
+                # print("catch")
+            elif abs(diff_x) < 10 and abs(diff_y) == 0:
+                catch = True
+                # print("catch")
+            match ghost.u:
+                # target is pacman
+                case 0:
+                    if catch:
+                        # print("game over")
+                        # exit()
+                        self.end = True
+                    else:
+                        self.ghosts_direction(
+                            ghost, diff_x, diff_y, "left", "right", "up", "down"
+                        )
+                        ghost.speed = 1
+                # target is run away
+                case 8:
+                    if catch:
+                        # print("dead ghost")
+                        self.score += 50
+                        ghost.change_costume(2)
+                        ghost.target = Sprite.sprite_list[0]
+                        # move to nearest block so speed 8 works
+                        ghost.x = ghost.x - ghost.x % 8
+                        ghost.y = ghost.y - ghost.y % 8
+                        ghost.speed = 8
+                    else:
+                        self.ghosts_direction(
+                            ghost, diff_x, diff_y, "right", "left", "down", "up"
+                        )  ##
+                # target is home
+                case 16:
+                    if catch:
+                        ghost.change_costume(0)
+                        ghost.target = Sprite.sprite_list[1]
+                        ghost.timer = 0
+                        ghost.speed = 1
+                    else:
+                        # print(f"{ghost.x},{ghost.y}")
+                        tile = pyxel.tilemaps[1].pget(ghost.x // 8, ghost.y // 8)
+                        match tile:
+                            case (0, 6):
+                                ghost.direction = "right"
+                            case (1, 6):
+                                ghost.direction = "left"
+                            case (2, 6):
+                                ghost.direction = "down"
+                            case (3, 6):
+                                ghost.direction = "up"
+                            case _:
+                                pass
 
 
     # picking the ghosts directions
@@ -275,7 +403,10 @@ class App:
             case _:
                 pass
 
+
+    # ########### UPDATE ########## #
     # this is 'update' for events such as key presses and runs every frame
+    
     def update(self):
         if self.start:
             if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
@@ -286,132 +417,10 @@ class App:
                 quit()
             # pass
         else:
-            # pacman = Sprite.sprite_list[1]
-            pacman_tile_location = (self.pacman.x // 8, self.pacman.y // 8)
-            current_tile = pyxel.tilemaps[0].pget(
-                pacman_tile_location[0],
-                pacman_tile_location[1],
-            )
-
-            # if the tile at pacman location is the small pill
-            if current_tile == self.small_pill:
-                # count the number of small pills collected, break if all are collected
-                if self.pill_count < 114:
-                    self.pill_count += 1
-                    self.score += 10
-                    # print(self.pill_count)
-                    # this changes the tile map at pacman location to a black tile to eat pills
-                    pyxel.tilemaps[0].pset(
-                        pacman_tile_location[0],
-                        pacman_tile_location[1],
-                        self.blank_tile,
-                    )
-                else:
-                    # print("you win")
-                    # clear the final pill
-                    pyxel.tilemaps[0].pset(
-                        self.pacman.x // 8, self.pacman.y // 8, self.blank_tile
-                    )
-                    self.end = True
-
-            # if the tile at pacman location is the big pill
-            elif current_tile == self.big_pill:
-                pyxel.tilemaps[0].pset(
-                    self.pacman.x // 8, self.pacman.y // 8, self.blank_tile
-                )
-                self.pacman.timer = 700
-                for ghost in Sprite.sprite_list[2:]:
-                    # if ghost.u == 0:
-                    ghost.change_costume(1)
-                    ghost.timer = 60
-                    ghost.show = True
-                    ghost.target = Sprite.sprite_list[1]
-                    ghost.speed = 1
-
+            self.check_collisions()
             self.player_controls()
-
-            # setting ghost directions
-            for ghost in Sprite.sprite_list[2:]:
-                catch = False
-
-                if self.counting_down(self.pacman):
-                    pass
-                else:
-                    if self.counting_down(ghost):
-                        if pyxel.frame_count % 5 == 0:
-                            if ghost.show:
-                                ghost.show = False
-                            else:
-                                ghost.show = True
-                            # if ghost.u == 8:
-                            #    ghost.change_costume(3)
-                            # else:
-                            #    ghost.change_costume(1)
-                    else:
-                        ghost.change_costume(0)
-                        ghost.target = Sprite.sprite_list[1]
-                        ghost.show = True
-
-                # objective = ghost.target
-                diff_x = ghost.x - ghost.target.x  # objective.x
-                diff_y = ghost.y - ghost.target.y  # objective.y
-
-                # #print(f"({diff_x},{diff_y})")
-                if abs(diff_x) == 0 and abs(diff_y) < 10:
-                    catch = True
-                    # print("catch")
-                elif abs(diff_x) < 10 and abs(diff_y) == 0:
-                    catch = True
-                    # print("catch")
-                match ghost.u:
-                    # target is pacman
-                    case 0:
-                        if catch:
-                            # print("game over")
-                            # exit()
-                            self.end = True
-                        else:
-                            self.ghosts_direction(
-                                ghost, diff_x, diff_y, "left", "right", "up", "down"
-                            )
-                            ghost.speed = 1
-                    # target is run away
-                    case 8:
-                        if catch:
-                            # print("dead ghost")
-                            self.score += 50
-                            ghost.change_costume(2)
-                            ghost.target = Sprite.sprite_list[0]
-                            # move to nearest block so speed 8 works
-                            ghost.x = ghost.x - ghost.x % 8
-                            ghost.y = ghost.y - ghost.y % 8
-                            ghost.speed = 8
-                        else:
-                            self.ghosts_direction(
-                                ghost, diff_x, diff_y, "right", "left", "down", "up"
-                            )  ##
-                    # target is home
-                    case 16:
-                        if catch:
-                            ghost.change_costume(0)
-                            ghost.target = Sprite.sprite_list[1]
-                            ghost.timer = 0
-                            ghost.speed = 1
-                        else:
-                            # print(f"{ghost.x},{ghost.y}")
-                            tile = pyxel.tilemaps[1].pget(ghost.x // 8, ghost.y // 8)
-                            match tile:
-                                case (0, 6):
-                                    ghost.direction = "right"
-                                case (1, 6):
-                                    ghost.direction = "left"
-                                case (2, 6):
-                                    ghost.direction = "down"
-                                case (3, 6):
-                                    ghost.direction = "up"
-                                case _:
-                                    pass
-
+            self.ghost_staus()
+            
             # move the ghosts up at the start
             if pyxel.frame_count < 30:
                 self.red_ghost.direction = self.pacman.direction  # "right"
@@ -432,10 +441,11 @@ class App:
 
     #########################################################################################
     #                                                                                       #
-    #                   DRAW()                                                              #
+    #                   DRAW                                                                #
     #                                                                                       #
     #########################################################################################
 
+    # ############ FUNCTIONS ########### #
 
     # draw the tile-map
     def draw_tilemap(self):
@@ -482,7 +492,9 @@ class App:
                     col=pyxel.COLOR_WHITE
                 )    
 
-    #    # this is 'draw' for animations and moving things around on screen, runs when needed
+    # ############ DRAW ############# #
+    # this is 'draw' for animations and moving things around on screen, runs when needed
+    
     def draw(self):
         # clear the screen and fill with background colour-back_colour
         # pyxel.cls(pyxel.COLOR_BLACK)
