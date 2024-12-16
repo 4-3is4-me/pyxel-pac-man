@@ -124,6 +124,10 @@ class App:
         self.end = False
         self.score = 0
 
+        # pyxel.sounds[0].set("e2e3e4", "p", "1", "n", 15)
+        # pyxel.sounds[0].set("d-1rrrrrrrrr", "s", "1", "v", 15)
+ 
+
         for ghost in Sprite.sprite_list[2:]:
             ghost.target = Sprite.sprite_list[1]
 
@@ -411,12 +415,14 @@ class App:
         if self.start:
             if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
                 self.start = False
+                # pyxel.play(0, 0, loop=True)
             # pass
         elif self.end:
             if pyxel.btn(pyxel.GAMEPAD1_BUTTON_X):
                 quit()
             # pass
         else:
+            pyxel.playm(0, loop=True)
             self.check_collisions()
             self.player_controls()
             self.ghost_staus()
