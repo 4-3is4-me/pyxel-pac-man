@@ -5,7 +5,7 @@
 ## add things to collect ; done
 ## control power pills, collection, timing, ghost behaviour; done
 ## game over and winning; done
-
+## splash and credits
 
 # import the pyxel module
 import pyxel
@@ -120,8 +120,10 @@ class App:
         self.small_pill = (2, 2)
         self.big_pill = (2, 3)
         self.blank_tile = (0, 5)
+        self.splash = False
         self.start = True
         self.end = False
+        self.credits = False
         self.score = 0
 
         # pyxel.sounds[0].set("e2e3e4", "p", "1", "n", 15)
@@ -131,7 +133,7 @@ class App:
         for ghost in Sprite.sprite_list[2:]:
             ghost.target = Sprite.sprite_list[1]
 
-        # pyxel.screen_mode(2) #classic, smooth, retro
+        # pyxel.screen_mode(1) #classic, smooth, retro
         # pyxel.fullscreen(True)
         # display_scale=5,  # 10 = maximised window
 
@@ -222,8 +224,8 @@ class App:
                         self.pacman.direction = "up"
 
 
-    def ghost_staus(self):
-        for ghost in Sprite.sprite_list[2:]:
+    def ghost_status(self, ghost):
+        # for ghost in Sprite.sprite_list[2:]:
             catch = False
 
             if self.counting_down(self.pacman):
@@ -412,38 +414,44 @@ class App:
     # this is 'update' for events such as key presses and runs every frame
     
     def update(self):
-        if self.start:
-            if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
-                self.start = False
-                # pyxel.play(0, 0, loop=True)
-            # pass
-        elif self.end:
-            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_X):
-                quit()
-            # pass
-        else:
-            pyxel.playm(0, loop=True)
-            self.check_collisions()
-            self.player_controls()
-            self.ghost_staus()
-            
-            # move the ghosts up at the start
-            if pyxel.frame_count < 30:
-                self.red_ghost.direction = self.pacman.direction  # "right"
-                self.green_ghost.direction = "up"
-                self.blue_ghost.direction = "up"
-                self.orange_ghost.direction = "up"
+        match True:
+            case self.splash:
+                pass
+            case self.start:
+                if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
+                    self.start = False
+                    # pyxel.play(0, 0, loop=True)
+                # pass
+            case self.end:
+                if pyxel.btn(pyxel.GAMEPAD1_BUTTON_X):
+                        quit()
+                    # pass
+            case self.credits:
+                pass
+            case _:
+                pyxel.playm(0, loop=True)
+                self.check_collisions()
+                self.player_controls()
+                for ghost in Sprite.sprite_list[2:]:
+                    self.ghost_status(ghost)
+                
+                # move the ghosts up at the start
+                if pyxel.frame_count < 30:
+                    self.red_ghost.direction = self.pacman.direction  # "right"
+                    self.green_ghost.direction = "up"
+                    self.blue_ghost.direction = "up"
+                    self.orange_ghost.direction = "up"
 
-            for sprite in Sprite.sprite_list[1:]:
-                self.teleport(sprite)
-                self.move_sprite(sprite)
+                for sprite in Sprite.sprite_list[1:]:
+                    self.teleport(sprite)
+                    self.move_sprite(sprite)
 
-            # this bit makes pacman animate
-            # make switch_costume and pass list of costumes to run though...??
-            if pyxel.frame_count % 10 < 5:
-                self.pacman.change_costume(1)
-            else:
-                self.pacman.change_costume(0)
+                # this bit makes pacman animate
+                # make switch_costume and pass list of costumes to run though...??
+                if pyxel.frame_count % 10 < 5:
+                    self.pacman.change_costume(1)
+                else:
+                    self.pacman.change_costume(0)
 
     #########################################################################################
     #                                                                                       #
@@ -466,21 +474,20 @@ class App:
         )
 
     # draw sprites if show is True
-    def draw_sprites(self):
-        for sprite in Sprite.sprite_list:
-            if sprite.show:
-                pyxel.blt(
-                    x=sprite.x,
-                    y=sprite.y,
-                    img=sprite.image_bank,
-                    u=sprite.u,
-                    v=sprite.v,
-                    w=sprite.w,
-                    h=sprite.h,
-                    colkey=sprite.colkey,
-                    rotate=sprite.rotation,
-                    scale=sprite.scale,
-                )
+    def draw_sprite(self, sprite):
+        if sprite.show:
+            pyxel.blt(
+                x=sprite.x,
+                y=sprite.y,
+                img=sprite.image_bank,
+                u=sprite.u,
+                v=sprite.v,
+                w=sprite.w,
+                h=sprite.h,
+                colkey=sprite.colkey,
+                rotate=sprite.rotation,
+                scale=sprite.scale,
+            )
     
     def draw_header(self, text):
         pyxel.text(
@@ -504,35 +511,42 @@ class App:
     def draw(self):
         # clear the screen and fill with background colour-back_colour
         # pyxel.cls(pyxel.COLOR_BLACK)
-
-        if self.start:
-            self.draw_tilemap()
-            self.draw_sprites()
-            if pyxel.frame_count % 30 < 20:
-                self.draw_header("PRESS LEFT OR RIGHT TO START")
-        elif self.end:
-            self.draw_tilemap()
-            self.draw_sprites()
-            if self.pill_count < 114:
-                if pyxel.frame_count % 30 < 10:
-                    self.pacman.show = False
-                else:
-                    self.pacman.show = True
-                if pyxel.frame_count % 30 < 20:
-                    self.draw_header("TOO BAD! HIT X")
-                self.draw_score()
-            else:
+        match True:
+            case self.splash:
+                pass
+            case self.start:
                 self.draw_tilemap()
-                self.draw_sprites()
+                for sprite in Sprite.sprite_list:
+                    self.draw_sprite(sprite)
                 if pyxel.frame_count % 30 < 20:
-                    self.draw_header("YOU WIN! HIT X")
+                    self.draw_header("PRESS LEFT OR RIGHT TO START")
+            case self.end:
+                self.draw_tilemap()
+                for sprite in Sprite.sprite_list:
+                    self.draw_sprite(sprite)
+                if self.pill_count < 114:
+                    if pyxel.frame_count % 30 < 10:
+                        self.pacman.show = False
+                    else:
+                        self.pacman.show = True
+                    if pyxel.frame_count % 30 < 20:
+                        self.draw_header("TOO BAD! HIT X")
+                    self.draw_score()
+                else:
+                    self.draw_tilemap()
+                    for sprite in Sprite.sprite_list:
+                        self.draw_sprite(sprite)
+                    if pyxel.frame_count % 30 < 20:
+                        self.draw_header("YOU WIN! HIT X")
+                    self.draw_score()
+            case self.credits:
+                pass
+            case _:
+                self.draw_tilemap()
+                for sprite in Sprite.sprite_list:
+                    self.draw_sprite(sprite)
+                self.draw_header("PAC-MAN")
                 self.draw_score()
-
-        else:
-            self.draw_tilemap()
-            self.draw_sprites()
-            self.draw_header("PAC-MAN")
-            self.draw_score()
 
 # Start the App
 App()
