@@ -429,7 +429,7 @@ class App:
             case self.credits:
                 pass
             case _:
-                pyxel.playm(0, loop=True)
+                # pyxel.playm(0, loop=True)
                 self.check_collisions()
                 self.player_controls()
                 for ghost in Sprite.sprite_list[2:]:

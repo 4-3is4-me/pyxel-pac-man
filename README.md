@@ -1,4 +1,4 @@
-# Pac-Man style game in Pyxel
+# Pac-Man style game in Python using Pyxel
 
 <p><a href="https://github.com/kitao/pyxel/tree/main?tab=readme-ov-file">
 <img src="https://github.com/kitao/pyxel/raw/main/docs/images/pyxel_logo_152x64.png">
@@ -10,5 +10,19 @@
 
 ## [Click to play in browser without gamepad overlay](https://kitao.github.io/pyxel/wasm/launcher/?play=4-3is4-me.pyxel-pac-man.build.sprite)
 
+Toggle fullscreen  - Alt + Enter
+Switch style - Alt + 9
 
+### I created this Pac-Man game as a quick and simple way to learn Pyxel and the Pyxel editor. To make reduce development time, sprites and tilemap tiles are based on 8x8 pixel blocks and there is no sound, which might be a good thing!
 
+<img src="assets/img_bank_0.png" width=400 height=300>
+Image bank 0
+
+<img src="assets/img_bank_1.png">
+Image bank 1
+
+<img src="assets/tile_bank_0.png">
+Tilemap bank 0
+
+<img src="assets/img_bank_1.png">
+Tilemap bank 1
