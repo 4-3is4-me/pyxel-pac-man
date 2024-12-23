@@ -17,20 +17,20 @@
 
 
 
-Image bank 0
+Image bank 0<br>
 <img src="assets/img_bank_0.png">
 
 
 
-Image bank 1
+Image bank 1<br>
 <img src="assets/img_bank_1.png">
 
 
 
-Tilemap bank 0
+Tilemap bank 0<br>
 <img src="assets/tile_bank_0.png">
 
 
 
-Tilemap bank 1
+Tilemap bank 1<br>
 <img src="assets/tile_bank_1.png">
