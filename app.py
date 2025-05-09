@@ -17,7 +17,7 @@ class App:
 
         #############################################################################################
         #                                                                                           #
-        #                   INIT                                                                    #
+        #                   INIT()                                                                  #
         #                                                                                           #
         #############################################################################################
 
@@ -120,8 +120,8 @@ class App:
         self.small_pill = (2, 2)
         self.big_pill = (2, 3)
         self.blank_tile = (0, 5)
-        self.splash = False
-        self.start = True
+        self.splash = True
+        self.start = False
         self.end = False
         self.credits = False
         self.score = 0
@@ -142,11 +142,10 @@ class App:
 
     ###########################################################################################
     #                                                                                         #
-    #                   UPDATE                                                                #
+    #                   UPDATE()                                                              #
     #                                                                                         #
     ###########################################################################################
 
-    # ########### FUNCTIONS ########### #
     # timer
     def counting_down(self, sprite):
         if sprite.timer > 0:  #!= 0:
@@ -224,8 +223,8 @@ class App:
                         self.pacman.direction = "up"
 
 
-    def ghost_status(self, ghost):
-        # for ghost in Sprite.sprite_list[2:]:
+    def ghost_status(self):
+        for ghost in Sprite.sprite_list[2:]:
             catch = False
 
             if self.counting_down(self.pacman):
@@ -305,7 +304,6 @@ class App:
                                 ghost.direction = "up"
                             case _:
                                 pass
-
 
     # picking the ghosts directions
     def ghosts_direction(self, ghost, diff_x, diff_y, dir_1, dir_2, dir_3, dir_4):
@@ -409,31 +407,31 @@ class App:
             case _:
                 pass
 
-
-    # ########### UPDATE ########## #
-    # this is 'update' for events such as key presses and runs every frame
-    
+    # this is 'update' for events such as key presses and runs every frame 
     def update(self):
         match True:
             case self.splash:
-                pass
+                if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
+                    self.splash = False
+                    self.start = True
+                # pass
             case self.start:
                 if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
                     self.start = False
                     # pyxel.play(0, 0, loop=True)
                 # pass
             case self.end:
-                if pyxel.btn(pyxel.GAMEPAD1_BUTTON_X):
-                        quit()
-                    # pass
+                if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
+                    self.end = False
+                    self.credits = True
+                    # quit()
             case self.credits:
                 pass
             case _:
                 # pyxel.playm(0, loop=True)
                 self.check_collisions()
                 self.player_controls()
-                for ghost in Sprite.sprite_list[2:]:
-                    self.ghost_status(ghost)
+                self.ghost_status()
                 
                 # move the ghosts up at the start
                 if pyxel.frame_count < 30:
@@ -455,11 +453,9 @@ class App:
 
     #########################################################################################
     #                                                                                       #
-    #                   DRAW                                                                #
+    #                   DRAW()                                                              #
     #                                                                                       #
     #########################################################################################
-
-    # ############ FUNCTIONS ########### #
 
     # draw the tile-map
     def draw_tilemap(self):
@@ -474,20 +470,21 @@ class App:
         )
 
     # draw sprites if show is True
-    def draw_sprite(self, sprite):
-        if sprite.show:
-            pyxel.blt(
-                x=sprite.x,
-                y=sprite.y,
-                img=sprite.image_bank,
-                u=sprite.u,
-                v=sprite.v,
-                w=sprite.w,
-                h=sprite.h,
-                colkey=sprite.colkey,
-                rotate=sprite.rotation,
-                scale=sprite.scale,
-            )
+    def draw_sprites(self):
+        for sprite in Sprite.sprite_list:
+            if sprite.show:
+                pyxel.blt(
+                    x=sprite.x,
+                    y=sprite.y,
+                    img=sprite.image_bank,
+                    u=sprite.u,
+                    v=sprite.v,
+                    w=sprite.w,
+                    h=sprite.h,
+                    colkey=sprite.colkey,
+                    rotate=sprite.rotation,
+                    scale=sprite.scale,
+                )
     
     def draw_header(self, text):
         pyxel.text(
@@ -505,46 +502,94 @@ class App:
                     col=pyxel.COLOR_WHITE
                 )    
 
-    # ############ DRAW ############# #
     # this is 'draw' for animations and moving things around on screen, runs when needed
-    
     def draw(self):
         # clear the screen and fill with background colour-back_colour
         # pyxel.cls(pyxel.COLOR_BLACK)
         match True:
             case self.splash:
-                pass
+                self.draw_sprites()
+                self.draw_header(
+'''
+
+          PAC-MAN
+      
+       VERSION BY TIM
+
+          CREATED
+      USING PYTHON AND
+           PYXEL
+
+
+
+
+
+
+    HOW MANY POINTS CAN 
+        YOU SCORE? 
+         HAVE FUN!
+
+
+
+    FULLSCREEN ALT+ENTER 
+        MODE ALT+9
+      PRESS UP TO PLAY
+        OR X TO QUIT
+''')
+                # pass
             case self.start:
                 self.draw_tilemap()
-                for sprite in Sprite.sprite_list:
-                    self.draw_sprite(sprite)
+                self.draw_sprites()
                 if pyxel.frame_count % 30 < 20:
                     self.draw_header("PRESS LEFT OR RIGHT TO START")
             case self.end:
                 self.draw_tilemap()
-                for sprite in Sprite.sprite_list:
-                    self.draw_sprite(sprite)
+                self.draw_sprites()
                 if self.pill_count < 114:
                     if pyxel.frame_count % 30 < 10:
                         self.pacman.show = False
                     else:
                         self.pacman.show = True
                     if pyxel.frame_count % 30 < 20:
-                        self.draw_header("TOO BAD! HIT X")
+                        self.draw_header("TOO BAD! HIT UP")
                     self.draw_score()
                 else:
                     self.draw_tilemap()
-                    for sprite in Sprite.sprite_list:
-                        self.draw_sprite(sprite)
+                    self.draw_sprites()
                     if pyxel.frame_count % 30 < 20:
-                        self.draw_header("YOU WIN! HIT X")
+                        self.draw_header("YOU WIN! HIT UP")
                     self.draw_score()
             case self.credits:
-                pass
+                pyxel.cls(pyxel.COLOR_BLACK)
+                self.draw_score()
+                self.draw_header(
+'''
+
+         GAME OVER!
+
+     REFRESH THE PAGE TO
+         PLAY AGAIN
+             OR
+       PRESS X to QUIT
+
+
+
+
+     SEE THE SOUCE CODE
+           HERE     
+    github.com/4-3is4-me/
+        pyxel-pac-man
+
+
+     PYXEL SOURCE CODE
+           HERE
+    github.com/kitao/pyxel   
+'''
+)
+                # pass
             case _:
                 self.draw_tilemap()
-                for sprite in Sprite.sprite_list:
-                    self.draw_sprite(sprite)
+                self.draw_sprites()
                 self.draw_header("PAC-MAN")
                 self.draw_score()
 
