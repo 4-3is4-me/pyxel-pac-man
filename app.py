@@ -1,3 +1,7 @@
+# title: Pyxel PAC_MAN
+# author: Tim Wornell
+# desc: A Pyxel implimentation of PAC-MAN
+
 ## stuff to do..
 ## add more ghosts ; done
 ## add list for sprites ; done
