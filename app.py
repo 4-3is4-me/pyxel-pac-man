@@ -1,7 +1,3 @@
-# title: Pyxel PAC_MAN
-# author: Tim Wornell
-# desc: A Pyxel implimentation of PAC-MAN
-
 ## stuff to do..
 ## add more ghosts ; done
 ## add list for sprites ; done
@@ -396,7 +392,7 @@ class App:
                     # check if light blue wall in the way
                     if pyxel.pget(sprite.x + 4, sprite.y + 9) < 5:  #!= 6:
                         if sprite.name == "pacman":
-                            sprite.move(direction="down", rotation=270)
+                            sprite.move(direction="down", rotation=90)
                         else:
                             sprite.move(direction="down")
             case "up":
@@ -405,7 +401,7 @@ class App:
                     # check if light blue wall in the way
                     if pyxel.pget(sprite.x + 4, sprite.y - 2) < 5:  #!= 6:
                         if sprite.name == "pacman":
-                            sprite.move(direction="up", rotation=90)
+                            sprite.move(direction="up", rotation=270)
                         else:
                             sprite.move(direction="up")
             case _:
