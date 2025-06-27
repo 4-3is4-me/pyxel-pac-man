@@ -6,9 +6,9 @@
 
 <img src="assets/pacman_play.gif">
 
-## [Click to play in browser with gamepad overlay for mobile](https://kitao.github.io/pyxel/wasm/launcher/?play=4-3is4-me.pyxel-pac-man.build.sprite&gamepad=enabled)
+## [Click to play in browser with gamepad overlay for mobile](https://kitao.github.io/pyxel/wasm/launcher/?play=4-3is4-me.pyxel-pac-man.build.pyxel-pac-man&gamepad=enabled)
 
-## [Click to play in browser without gamepad overlay](https://kitao.github.io/pyxel/wasm/launcher/?play=4-3is4-me.pyxel-pac-man.build.sprite)
+## [Click to play in browser without gamepad overlay](https://kitao.github.io/pyxel/wasm/launcher/?play=4-3is4-me.pyxel-pac-man.build.pyxel-pac-man)
 
 #### Toggle fullscreen  - Alt + Enter
 #### Switch style - Alt + 9
